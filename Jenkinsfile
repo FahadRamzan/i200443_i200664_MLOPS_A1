@@ -2,7 +2,6 @@ pipeline {
     agent any
     
     environment {
-        DOCKER_CREDENTIALS = 'docker-hub-credentials'
         DOCKER_IMAGE_NAME = 'RumaisaIlyas/mlops_A1:latest'
         DOCKER_HOST = 'tcp://localhost:2375'
     }
@@ -18,16 +17,21 @@ pipeline {
             steps {
                 // Build Docker image
                 script {
-                    docker.build(DOCKER_IMAGE_NAME, "-f Dockerfile .")
+                    sh "docker build -t $DOCKER_IMAGE_NAME ."
                 }
             }
         }
         
-        stage('Push to Docker Hub') {
+        stage('Login Dockerhub abd Push Docker Image') {
+            environment {
+                DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
+            }
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', DOCKER_CREDENTIALS) {
-                        docker.image(DOCKER_IMAGE_NAME).push()
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
+                        sh "echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin"
+
+                        sh "docker push $DOCKER_IMAGE_NAME"
                     }
                 }
             }
