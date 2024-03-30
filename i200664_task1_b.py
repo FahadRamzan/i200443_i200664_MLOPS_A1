@@ -9,7 +9,10 @@ from sklearn.svm import SVC
 from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+
 
 # Load the dataset
 df = pd.read_csv('bank.csv')
@@ -47,7 +50,9 @@ print(df.describe(include=['object']))
 # Data Preprocessing on features
 
 # One-Hot Encoding
-nominal_categorical_columns = ['job', 'marital', 'education', 'contact', 'month', 'poutcome']
+nominal_categorical_columns = [
+    'job', 'marital', 'education', 'contact', 'month', 'poutcome'
+]
 df_encoded = pd.get_dummies(df, columns=nominal_categorical_columns)
 df = df_encoded
 
@@ -66,9 +71,15 @@ def detect_outliers_iqr_column(data, column_name):
     IQR = Q3 - Q1
     lower_bound = Q1 - 1.5 * IQR
     upper_bound = Q3 + 1.5 * IQR
-    outliers_indices = data[(data[column_name] < lower_bound) | (data[column_name] > upper_bound)].index
+    outliers_indices = (
+        data[
+            (data[column_name] < lower_bound) |
+            (data[column_name] > upper_bound)
+        ].index
+    )
     num_outliers = len(outliers_indices)
     return num_outliers, outliers_indices
+
 
 # Function to remove outliers using IQR
 def remove_outliers_iqr(data, column_name):
@@ -77,30 +88,45 @@ def remove_outliers_iqr(data, column_name):
     IQR = Q3 - Q1
     lower_bound = Q1 - 1.5 * IQR
     upper_bound = Q3 + 1.5 * IQR
-    filtered_data = data[(data[column_name] >= lower_bound) & (data[column_name] <= upper_bound)]
+    filtered_data = (
+        data[
+            (data[column_name] >= lower_bound) & 
+            (data[column_name] <= upper_bound)
+        ]
+    )
     return filtered_data
 
+
 # Detect and remove outliers for selected numerical columns
-numerical_columns = ['age', 'balance', 'duration', 'campaign', 'pdays', 'previous']
+numerical_columns = [
+    'age', 'balance', 'duration', 'campaign', 'pdays', 'previous'
+]
 for column_name in numerical_columns:
     num_outliers, outliers_indices = detect_outliers_iqr_column(df, column_name)
-    print("Number of outliers in column '{}': {}".format(column_name, num_outliers))
     print("Indices of outliers:", outliers_indices)
     df = remove_outliers_iqr(df, column_name)
 
 # Detect outliers using Z-Score
 def detect_outliers_zscore(data, column_name, threshold=3):
-    z_scores = np.abs((data[column_name] - data[column_name].mean()) / data[column_name].std())
+    z_scores = np.abs(
+        (data[column_name] - data[column_name].mean()) /
+        data[column_name].std()
+    )
     outliers_indices = np.where(z_scores > threshold)[0]
     num_outliers = len(outliers_indices)
     return num_outliers, outliers_indices
 
+
 # Remove outliers using Z-Score
 def remove_outliers_zscore(data, column_name, threshold=3):
-    z_scores = np.abs((data[column_name] - data[column_name].mean()) / data[column_name].std())
+    z_scores = np.abs(
+        (data[column_name] - data[column_name].mean()) /
+        data[column_name].std()
+    )
     outliers_indices = np.where(z_scores > threshold)[0]
     data_no_outliers = data.drop(outliers_indices)
     return data_no_outliers
+
 
 for column_name in numerical_columns:
     num_outliers, outliers_indices = detect_outliers_zscore(df_original, column_name)
@@ -112,7 +138,9 @@ for column_name in numerical_columns:
 # Data Visualization
 
 # Distribution plots and Box plots before preprocessing
-numerical_columns = ['age', 'balance', 'day', 'duration', 'campaign', 'pdays', 'previous']
+numerical_columns = [
+    'age', 'balance', 'day', 'duration', 'campaign', 'pdays', 'previous'
+]
 plt.figure(figsize=(12, 8))
 for i, column in enumerate(numerical_columns, 1):
     plt.subplot(3, 3, i)
@@ -132,7 +160,13 @@ plt.show()
 # Correlation matrix heatmap before preprocessing
 correlation_matrix = df_original[numerical_columns].corr()
 plt.figure(figsize=(10, 8))
-sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f", linewidths=0.5)
+sns.heatmap(
+    correlation_matrix,
+    annot=True,
+    cmap='coolwarm',
+    fmt=".2f",
+    linewidths=0.5
+)
 plt.title('Correlation Matrix Heatmap')
 plt.show()
 
@@ -141,12 +175,17 @@ plt.show()
 # Normalization using Min-Max scaling
 scaler = MinMaxScaler()
 df_normalized = df_cleaned.copy()
-df_normalized[numerical_columns] = scaler.fit_transform(df_cleaned[numerical_columns])
+df_normalized[numerical_columns] = scaler.fit_transform(
+    df_cleaned[numerical_columns]
+)
+
 
 # Standardization using Z-score scaling
 scaler = StandardScaler()
 df_standardized = df_cleaned.copy()
-df_standardized[numerical_columns] = scaler.fit_transform(df_cleaned[numerical_columns])
+df_standardized[numerical_columns] = scaler.fit_transform(
+    df_cleaned[numerical_columns]
+)
 
 # Display histograms for original, normalized, and standardized data
 plt.figure(figsize=(16, 20))  # Keep the figure size
