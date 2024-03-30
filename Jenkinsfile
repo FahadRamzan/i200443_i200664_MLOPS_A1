@@ -13,44 +13,25 @@ pipeline {
             }
         }
         
-        stage('Containerize') {
+          stage('Containerize') {
             steps {
-                // Build Docker image
                 script {
-                    bat "docker build -f $DOCKER_IMAGE_NAME ."
+                    
+                    docker.build("${IMAGE_NAME}:${TAG}")
                 }
             }
         }
-
         
-        stage('Login Dockerhub and Push Docker Image') {
-            environment {
-                DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
-            }
+        stage('Push') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-                        // Echo Docker Hub username
-                        echo "Docker Hub username: $DOCKER_HUB_USERNAME"
-                        
-                        // Perform Docker login
-                        def loginCmd = "echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin"
-                        def loginStatus = bat script: loginCmd, returnStatus: true
-                        
-                        if (loginStatus == 0) {
-                            echo "Docker login successful."
-                        } else {
-                            error "Docker login failed. Exit code: $loginStatus"
-                        }
-                        
-                        // Push Docker image
-                        def pushCmd = "docker push $DOCKER_IMAGE_NAME"
-                        bat pushCmd
+                    // Logging in to Docker Hub and pushing the image
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS_ID) {
+                        docker.image("${IMAGE_NAME}:${TAG}").push()
                     }
                 }
             }
         }
-
     }
     
     post {
