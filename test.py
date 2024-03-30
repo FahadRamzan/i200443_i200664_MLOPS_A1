@@ -1,8 +1,6 @@
 import pytest
 import pandas as pd
 from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsClassifier
 from joblib import load
 
 
@@ -12,6 +10,7 @@ def trained_model():
     knn_model = load('knn_model.joblib')
     return knn_model
 
+
 @pytest.fixture
 def test_data():
     # Load test data
@@ -19,6 +18,7 @@ def test_data():
     X_test = data.drop('deposit', axis=1)
     y_test = data['deposit']
     return X_test, y_test
+
 
 def test_accuracy(trained_model, test_data):
     knn_model = trained_model
@@ -30,4 +30,3 @@ def test_accuracy(trained_model, test_data):
     # Check if accuracy is not None and between 0 and 1
     assert accuracy is not None
     assert 0 <= accuracy <= 1
-
