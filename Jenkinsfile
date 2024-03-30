@@ -2,6 +2,7 @@ pipeline {
     agent any
     
     environment {
+        DOCKERHUB_CREDENTIALS_ID = 'dockerhub-credentials' 
         DOCKER_IMAGE_NAME = 'fahadramzan/mlops_a1:latest'
         DOCKER_HOST = 'tcp://localhost:2375'
     }
