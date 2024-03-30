@@ -1,21 +1,31 @@
 pipeline {
     agent any
+
+    triggers {
+        githubPush()
+    }
     
     environment {
-        DOCKER_IMAGE_NAME = 'fahadramzan/mlops_a1:latest'
+       
+        DOCKERHUB_CREDENTIALS_ID = 'dockerhub-credentials' 
+        IMAGE_NAME = 'fahadramzan/mlops_a1'
+        TAG = 'latest' 
+        DOCKER_HOST = 'tcp://localhost:2375'
     }
     
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/FahadRamzan/i200443_i200664_MLOPS_A1.git'
+                
+                checkout scm
             }
         }
         
-        stage('Containerize') {
+        stage('Build') {
             steps {
                 script {
-                    docker.build("${DOCKER_IMAGE_NAME}")
+                    
+                    docker.build("${IMAGE_NAME}:${TAG}")
                 }
             }
         }
@@ -24,10 +34,8 @@ pipeline {
             steps {
                 script {
                     // Logging in to Docker Hub and pushing the image
-                    withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS_ID', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        docker.withRegistry('https://index.docker.io/v1/', DOCKER_USERNAME, DOCKER_PASSWORD) {
-                            docker.image("${DOCKER_IMAGE_NAME}").push()
-                        }
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS_ID) {
+                        docker.image("${IMAGE_NAME}:${TAG}").push()
                     }
                 }
             }
@@ -36,22 +44,16 @@ pipeline {
     
     post {
         success {
-            emailext (
-                subject: 'Jenkins Build Success',
-                body: 'The Jenkins build was successful.',
-                to: 'i200443@nu.edu.pk'
-            )
+            // Notifying the administrator via email
+            mail to: 'i200443@nu.edu.pk',
+                 subject: "Successful Docker Image Build",
+                 body: "The Docker image ${IMAGE_NAME}:${TAG} has been built and pushed successfully."
         }
         failure {
-            emailext (
-                subject: 'Jenkins Build Failure',
-                body: 'The Jenkins build failed. Please check the build logs for details.',
-                to: 'i200443@nu.edu.pk'
-            )
+           //notify if the pipeline fails
+            mail to: 'i200443@nu.edu.pk',
+                 subject: "Docker Image Build Failed",
+                 body: "There was a problem building or pushing the Docker image ${IMAGE_NAME}:${TAG}."
         }
-    }
-    
-    triggers {
-        githubPush()
     }
 }
