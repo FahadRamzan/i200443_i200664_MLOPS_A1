@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import seaborn as sns
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
@@ -20,15 +19,6 @@ df_original = pd.read_csv('bank.csv')
 
 # Display the first 5 rows
 print(df.head(5))
-
-# Check correlation between selected columns
-selected_columns = [
-    'education', 'job', 'marital', 'age', 'default', 'balance', 'housing',
-    'loan', 'contact', 'day', 'month', 'duration', 'campaign', 'pdays',
-    'previous', 'poutcome', 'deposit'
-]
-correlation_matrix = df[selected_columns].corr()
-print(correlation_matrix)
 
 # Display data types, shape, and info
 print(df.dtypes)
@@ -112,71 +102,6 @@ for column_name in numerical_columns:
 # Save cleaned data
 df_cleaned = df.copy()
 
-
-# Detect outliers using Z-Score
-def detect_outliers_zscore(data, column_name, threshold=3):
-    z_scores = np.abs(
-        (data[column_name] - data[column_name].mean()) /
-        data[column_name].std()
-    )
-    outliers_indices = np.where(z_scores > threshold)[0]
-    num_outliers = len(outliers_indices)
-    return num_outliers, outliers_indices
-
-
-# Remove outliers using Z-Score
-def remove_outliers_zscore(data, column_name, threshold=3):
-    z_scores = np.abs(
-        (data[column_name] - data[column_name].mean()) /
-        data[column_name].std()
-    )
-    outliers_indices = np.where(z_scores > threshold)[0]
-    data_no_outliers = data.drop(outliers_indices)
-    return data_no_outliers
-
-
-for column_name in numerical_columns:
-    num_outliers, outliers_indices = detect_outliers_zscore(
-        df_original, column_name
-    )
-    print("Indices of outliers:", outliers_indices)
-    df_no_outliers = remove_outliers_zscore(df_original, column_name)
-    # plot_outliers_scatter(df_no_outliers, column_name)
-
-# Data Visualization
-
-# Distribution plots and Box plots before preprocessing
-numerical_columns = [
-    'age', 'balance', 'day', 'duration', 'campaign', 'pdays', 'previous'
-]
-plt.figure(figsize=(12, 8))
-for i, column in enumerate(numerical_columns, 1):
-    plt.subplot(3, 3, i)
-    sns.histplot(df_original[column], kde=True, color='skyblue')
-    plt.title(f'Distribution of {column}')
-plt.tight_layout()
-plt.show()
-
-plt.figure(figsize=(12, 8))
-for i, column in enumerate(numerical_columns, 1):
-    plt.subplot(3, 3, i)
-    sns.boxplot(y=df_original[column], color='lightgreen')
-    plt.title(f'Box plot of {column}')
-plt.tight_layout()
-plt.show()
-
-# Correlation matrix heatmap before preprocessing
-correlation_matrix = df_original[numerical_columns].corr()
-plt.figure(figsize=(10, 8))
-sns.heatmap(
-    correlation_matrix,
-    annot=True,
-    cmap='coolwarm',
-    fmt=".2f",
-    linewidths=0.5
-)
-plt.title('Correlation Matrix Heatmap')
-plt.show()
 
 # Data Transformation
 
