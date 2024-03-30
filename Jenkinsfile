@@ -17,7 +17,7 @@ pipeline {
             steps {
                 script {
                     
-                    docker.build("${IMAGE_NAME}:${TAG}")
+                    docker.build("${IMAGE_NAME}")
                 }
             }
         }
@@ -27,7 +27,7 @@ pipeline {
                 script {
                     // Logging in to Docker Hub and pushing the image
                     docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS_ID) {
-                        docker.image("${IMAGE_NAME}:${TAG}").push()
+                        docker.image("${IMAGE_NAME}").push()
                     }
                 }
             }
