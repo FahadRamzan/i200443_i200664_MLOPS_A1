@@ -15,12 +15,6 @@ pipeline {
         
         stage('Containerize') {
             steps {
-                // Verify the current directory
-                bat 'pwd'
-                
-                // List the files in the current directory
-                bat 'ls -l'
-                
                 // Build Docker image
                 script {
                     bat "docker build -t $DOCKER_IMAGE_NAME ."
