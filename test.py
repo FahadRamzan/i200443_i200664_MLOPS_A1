@@ -16,7 +16,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 # Initialize your machine learning model
 # Load the model
-knn_model = load('KNN_model.joblib')
+knn_model = load('knn_model.joblib')
 
 
 # Make predictions on the test set
