@@ -8,5 +8,5 @@ images:
 	docker images
 
 run:
-	docker run -p 5000:5000 mlops_A1
+	docker run -p 5000:5000 mlops_a1
 
