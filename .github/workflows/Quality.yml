@@ -1,0 +1,14 @@
+on:
+  push:
+    branches:
+      - dev
+jobs:
+  code_quality_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: pip install flake8
+      - name: Run flake8
+        run: flake8
