@@ -27,3 +27,4 @@ def test_accuracy(trained_model, test_data):
     # Check if accuracy is not None and between 0 and 1
     assert accuracy is not None
     assert 0 <= accuracy <= 1
+    
