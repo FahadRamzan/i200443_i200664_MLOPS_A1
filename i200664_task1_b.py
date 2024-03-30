@@ -112,6 +112,7 @@ for column_name in numerical_columns:
 # Save cleaned data
 df_cleaned = df.copy()
 
+
 # Detect outliers using Z-Score
 def detect_outliers_zscore(data, column_name, threshold=3):
     z_scores = np.abs(
@@ -218,7 +219,9 @@ X = df_pre.drop(columns=['deposit']).values  # Features
 y = df_pre['deposit'].values  # Target variable
 
 # Split the dataset into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
 
 # Initialize classifiers
 classifiers = {
