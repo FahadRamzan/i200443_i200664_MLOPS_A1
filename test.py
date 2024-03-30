@@ -18,7 +18,7 @@ def test_data():
     X_test = data.drop('deposit', axis=1)
     y_test = data['deposit']
     return X_test, y_test
-    
+
 
 def test_accuracy(trained_model, test_data):
     knn_model = trained_model

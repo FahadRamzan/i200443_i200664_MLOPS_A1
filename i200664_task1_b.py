@@ -64,6 +64,7 @@ for col in binary_columns:
 # Save preprocessed data
 df_pre = df.copy()
 
+
 # Function to detect outliers using IQR
 def detect_outliers_iqr_column(data, column_name):
     Q1 = data[column_name].quantile(0.25)
@@ -90,7 +91,7 @@ def remove_outliers_iqr(data, column_name):
     upper_bound = Q3 + 1.5 * IQR
     filtered_data = (
         data[
-            (data[column_name] >= lower_bound) & 
+            (data[column_name] >= lower_bound) &
             (data[column_name] <= upper_bound)
         ]
     )
@@ -102,9 +103,14 @@ numerical_columns = [
     'age', 'balance', 'duration', 'campaign', 'pdays', 'previous'
 ]
 for column_name in numerical_columns:
-    num_outliers, outliers_indices = detect_outliers_iqr_column(df, column_name)
+    num_outliers, outliers_indices = detect_outliers_iqr_column(
+        df, column_name
+    )
     print("Indices of outliers:", outliers_indices)
     df = remove_outliers_iqr(df, column_name)
+
+# Save cleaned data
+df_cleaned = df.copy()
 
 # Detect outliers using Z-Score
 def detect_outliers_zscore(data, column_name, threshold=3):
@@ -129,8 +135,9 @@ def remove_outliers_zscore(data, column_name, threshold=3):
 
 
 for column_name in numerical_columns:
-    num_outliers, outliers_indices = detect_outliers_zscore(df_original, column_name)
-    print("Number of outliers in column '{}': {}".format(column_name, num_outliers))
+    num_outliers, outliers_indices = detect_outliers_zscore(
+        df_original, column_name
+    )
     print("Indices of outliers:", outliers_indices)
     df_no_outliers = remove_outliers_zscore(df_original, column_name)
     # plot_outliers_scatter(df_no_outliers, column_name)
