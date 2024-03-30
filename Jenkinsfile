@@ -2,9 +2,7 @@ pipeline {
     agent any
     
     environment {
-        DOCKERHUB_CREDENTIALS_ID = 'dockerhub-credentials' 
         DOCKER_IMAGE_NAME = 'fahadramzan/mlops_a1:latest'
-        DOCKER_HOST = 'tcp://localhost:2375'
     }
     
     stages {
@@ -14,10 +12,9 @@ pipeline {
             }
         }
         
-          stage('Containerize') {
+        stage('Containerize') {
             steps {
                 script {
-                    
                     docker.build("${DOCKER_IMAGE_NAME}")
                 }
             }
@@ -27,8 +24,10 @@ pipeline {
             steps {
                 script {
                     // Logging in to Docker Hub and pushing the image
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS_ID) {
-                        docker.image("${DOCKER_IMAGE_NAME}").push()
+                    withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS_ID', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        docker.withRegistry('https://index.docker.io/v1/', DOCKER_USERNAME, DOCKER_PASSWORD) {
+                            docker.image("${DOCKER_IMAGE_NAME}").push()
+                        }
                     }
                 }
             }
