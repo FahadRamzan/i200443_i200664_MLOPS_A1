@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER_CREDENTIALS = 'docker-hub-credentials'
         DOCKER_IMAGE_NAME = 'RumaisaIlyas/mlops_A1:latest'
+        DOCKER_HOST = 'tcp://localhost:2375'
     }
     
     stages {
