@@ -16,14 +16,14 @@ pipeline {
         stage('Containerize') {
             steps {
                 // Verify the current directory
-                sh 'pwd'
+                bat 'pwd'
                 
                 // List the files in the current directory
-                sh 'ls -l'
+                bat 'ls -l'
                 
                 // Build Docker image
                 script {
-                    sh "docker build -t $DOCKER_IMAGE_NAME ."
+                    bat "docker build -t $DOCKER_IMAGE_NAME ."
                 }
             }
         }
@@ -51,7 +51,7 @@ pipeline {
                 
                 // Push Docker image
                 def pushCmd = "docker push $DOCKER_IMAGE_NAME"
-                sh pushCmd
+                bat pushCmd
             }
         }
     }
