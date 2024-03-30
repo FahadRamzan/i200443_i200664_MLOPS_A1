@@ -2,6 +2,10 @@ on:
   pull_request:
     branches:
       - test
+    types:
+      - opened
+      - reopened
+      - synchronize
 jobs:
   unit_testing:
     runs-on: ubuntu-latest
