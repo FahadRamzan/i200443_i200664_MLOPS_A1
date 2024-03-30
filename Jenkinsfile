@@ -15,27 +15,48 @@ pipeline {
         
         stage('Containerize') {
             steps {
+                // Verify the current directory
+                sh 'pwd'
+                
+                // List the files in the current directory
+                sh 'ls -l'
+                
                 // Build Docker image
                 script {
                     sh "docker build -t $DOCKER_IMAGE_NAME ."
                 }
             }
         }
-        
-        stage('Login Dockerhub abd Push Docker Image') {
-            environment {
-                DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
-            }
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-                        sh "echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin"
 
-                        sh "docker push $DOCKER_IMAGE_NAME"
-                    }
+        
+        stage('Login Dockerhub and Push Docker Image') {
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
+    }
+    steps {
+        script {
+            withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
+                // Echo Docker Hub username
+                echo "Docker Hub username: $DOCKER_HUB_USERNAME"
+                
+                // Perform Docker login
+                def loginCmd = "echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin"
+                def loginStatus = sh(script: loginCmd, returnStatus: true)
+                
+                if (loginStatus == 0) {
+                    echo "Docker login successful."
+                } else {
+                    error "Docker login failed. Exit code: $loginStatus"
                 }
+                
+                // Push Docker image
+                def pushCmd = "docker push $DOCKER_IMAGE_NAME"
+                sh pushCmd
             }
         }
+    }
+}
+
     }
     
     post {
