@@ -8,7 +8,7 @@ pipeline {
     
     environment {
         DOCKERHUB_CREDENTIALS_ID = 'dockerhub-credentials'
-        IMAGE_NAME = 'fahadramzan/mlops_a1'
+        IMAGE_NAME = 'rumaisailyas/mlops_a1'
         TAG = 'latest' 
         DOCKER_HOST = 'tcp://localhost:2375'
     }
