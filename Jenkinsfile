@@ -49,22 +49,10 @@ pipeline {
     
     post {
     success {
-        // Notifying the administrator via email using an external SMTP server
-        mail to: 'i200443@nu.edu.pk',
-             subject: "Successful Docker Image Build",
-             body: "The Docker image ${IMAGE_NAME}:${TAG} has been built and pushed successfully.",
-             smtpHost: 'smtp.gmail.com',
-             smtpPort: '587',
-             credentialsId: 'your-gmail-credentials-id' // Jenkins credentials ID for Gmail
+        echo 'OK'
     }
     failure {
-       //notify if the pipeline fails using an external SMTP server
-        mail to: 'i200443@nu.edu.pk',
-             subject: "Docker Image Build Failed",
-             body: "There was a problem building or pushing the Docker image ${IMAGE_NAME}:${TAG}.",
-             smtpHost: 'smtp.gmail.com',
-             smtpPort: '587',
-             credentialsId: 'your-gmail-credentials-id' // Jenkins credentials ID for Gmail
+       echo 'NOT OK'
     }
 }
 
